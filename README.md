@@ -4,6 +4,8 @@ Dead simple calorie tracker, saves data locally/personal icloud. No ads, no trac
 ## Usage:
 Hosted on github pages: https://farisjarrah.github.io/calorie-tracker/
 Or just save and open the index.html in a your browser locally.
+Even on github pages, no data is transmitted anywhere and you are only opening up your data json file from local/cloud storage of your choice.
+
 
 If you save your file to icloud storage you can use the same file for all of your devices, probably works with any other filesystem integration type too, but untested.
 
