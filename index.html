@@ -329,6 +329,14 @@
 
   footer.note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; }
 </style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Calorie Tracker">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="icon" type="image/png" href="icon.png">
 </head>
 <body>
 
@@ -344,7 +352,8 @@
     </label>
     <div id="load-err"></div>
     <span id="sample-link">No file yet? Download a sample to try it</span><br><br>
-    <button class="btn" id="fresh-link">Or start from scratch (empty file)</button>
+    <button class="btn" id="fresh-link">Or start from scratch (empty file)</button><br><br>
+    <button class="btn" id="restore-link" hidden>Restore your last session</button>
   </div>
 </div>
 
@@ -598,6 +607,7 @@ function renderAll() {
   renderHistory();
   renderFoods();
   renderCharts();
+  backupDB();
 }
 
 function renderFoodList() {
@@ -1270,6 +1280,28 @@ function normalize(raw) {
   return db;
 }
 
+/* ================= Autosave backup (restore safety net) ================= */
+function backupDB() {
+  const app = document.getElementById("app");
+  if (!DB || !app || app.classList.contains("hidden")) return;
+  try {
+    localStorage.setItem("cal-data-backup", JSON.stringify({ savedAt: Date.now(), filename, data: DB }));
+  } catch (err) { /* storage unavailable - ignore */ }
+}
+(function initRestore() {
+  const btn = document.getElementById("restore-link");
+  if (!btn) return;
+  let bk = null;
+  try { bk = JSON.parse(localStorage.getItem("cal-data-backup")); } catch (err) {}
+  if (bk && bk.data) {
+    btn.hidden = false;
+    btn.addEventListener("click", () => {
+      if (!confirm("Restore your last session? This discards the current unsaved state.")) return;
+      loadAndStart(bk.data, bk.filename || "calorie-data.json");
+    });
+  }
+})();
+
 const fileInput = document.getElementById("file-input");
 const dropZone = document.getElementById("drop-zone");
 
@@ -1311,6 +1343,9 @@ document.getElementById("fresh-link").addEventListener("click", () => {
 });
 
 document.getElementById("save-btn").addEventListener("click", download);
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("sw.js");
+}
 
 document.getElementById("new-file-btn").addEventListener("click", () => {
   if (!confirm("Start a new empty file? Unsaved changes are lost.")) return;
@@ -1320,6 +1355,9 @@ document.getElementById("new-file-btn").addEventListener("click", () => {
   selectedDate = null;
   resetHistoryRange();
   renderAll();
+  try { localStorage.removeItem("cal-data-backup"); } catch (err) {}
+  const rb = document.getElementById("restore-link");
+  if (rb) rb.hidden = true;
 });
 
 /* ================= Tabs ================= */
