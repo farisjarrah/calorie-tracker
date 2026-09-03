@@ -352,6 +352,24 @@
   .no-data { color: var(--muted); text-align: center; padding: 30px 0; }
 
   footer.note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; }
+
+  /* ---------- Edit modals ---------- */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; padding: 20px;
+  }
+  .modal-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3); padding: 24px;
+    max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto;
+  }
+  .modal-box h2 { margin: 0 0 16px; font-size: 18px; }
+  .modal-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .modal-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 110px; }
+  .modal-field label { font-size: 12px; color: var(--muted); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+  .modal-hint { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
 </style>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#3b82f6">
@@ -519,6 +537,120 @@
     </div>
   </div>
 
+  <!-- Edit Entry Modal -->
+  <div id="edit-entry-modal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <h2>Edit entry</h2>
+      <div class="modal-row">
+        <div class="modal-field" style="flex:2;">
+          <label for="ee-name">Food name</label>
+          <input id="ee-name" type="text" list="food-list-edit">
+        </div>
+        <div class="modal-field">
+          <label for="ee-cal">Calories / serving</label>
+          <input id="ee-cal" type="number" min="0" step="any">
+        </div>
+        <div class="modal-field">
+          <label for="ee-qty">Servings</label>
+          <input id="ee-qty" type="number" min="0.01" step="any">
+        </div>
+        <div class="modal-field">
+          <label for="ee-time">Time</label>
+          <input id="ee-time" type="time">
+        </div>
+      </div>
+      <div class="modal-row" style="margin-top:2px;">
+        <div class="modal-field">
+          <label for="ee-protein">Protein (g)</label>
+          <input id="ee-protein" type="number" min="0" step="any">
+        </div>
+        <div class="modal-field">
+          <label for="ee-carbs">Carbs (g)</label>
+          <input id="ee-carbs" type="number" min="0" step="any">
+        </div>
+        <div class="modal-field">
+          <label for="ee-fat">Fat (g)</label>
+          <input id="ee-fat" type="number" min="0" step="any">
+        </div>
+      </div>
+      <datalist id="food-list-edit"></datalist>
+      <div class="modal-actions">
+        <button class="btn" id="ee-cancel">Cancel</button>
+        <button class="btn primary" id="ee-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Food Modal -->
+  <div id="edit-food-modal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <h2>Edit food</h2>
+      <div class="modal-row">
+        <div class="modal-field" style="flex:2;">
+          <label for="ef-name">Food name</label>
+          <input id="ef-name" type="text">
+        </div>
+        <div class="modal-field">
+          <label for="ef-cal">Calories / serving</label>
+          <input id="ef-cal" type="number" min="0" step="any">
+        </div>
+      </div>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label for="ef-protein">Protein (g)</label>
+          <input id="ef-protein" type="number" min="0" step="any">
+        </div>
+        <div class="modal-field">
+          <label for="ef-carbs">Carbs (g)</label>
+          <input id="ef-carbs" type="number" min="0" step="any">
+        </div>
+        <div class="modal-field">
+          <label for="ef-fat">Fat (g)</label>
+          <input id="ef-fat" type="number" min="0" step="any">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="ef-cancel">Cancel</button>
+        <button class="btn primary" id="ef-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Entry to Date Modal -->
+  <div id="add-entry-modal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <h2>Add entry</h2>
+      <div class="modal-row">
+        <div class="modal-field" style="flex:2;">
+          <label>Food name</label>
+          <input id="ae-name" type="text" list="food-list-edit">
+        </div>
+        <div class="modal-field">
+          <label for="ae-date">Date</label>
+          <input id="ae-date" type="date">
+        </div>
+      </div>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label for="ae-cal">Calories / serving</label>
+          <input id="ae-cal" type="number" min="0" step="any">
+        </div>
+        <div class="modal-field">
+          <label for="ae-qty">Servings</label>
+          <input id="ae-qty" type="number" min="0.01" step="any" value="1">
+        </div>
+        <div class="modal-field">
+          <label for="ae-time">Time</label>
+          <input id="ae-time" type="time">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="ae-cancel">Cancel</button>
+        <button class="btn primary" id="ae-save">Add</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="note">Data stays in your browser. Click "Save file" to download the updated JSON.</footer>
 </div>
 
@@ -653,6 +785,14 @@ function renderFoodList() {
       .sort((a, b) => a[1].name.localeCompare(b[1].name))
       .map(([id, f]) => `<option value="${esc(id)}" ${id === current ? "selected" : ""}>${esc(f.name)}</option>`)
       .join("");
+
+  const dlEdit = document.getElementById("food-list-edit");
+  if (dlEdit) {
+    dlEdit.innerHTML = Object.values(DB.foods)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(f => `<option value="${esc(f.name)}"></option>`)
+      .join("");
+  }
 }
 
 document.getElementById("pick-food").addEventListener("change", e => {
@@ -750,33 +890,44 @@ window.toggleDay = function(date) {
   renderHistory();
 };
 window.addEntryTo = function(date) {
-  const name = prompt("Food name for " + fmtDate(date) + ":");
-  if (!name) return;
+  document.getElementById("ae-date").value = date;
+  document.getElementById("ae-name").value = "";
+  document.getElementById("ae-cal").value = "";
+  document.getElementById("ae-qty").value = "1";
+  document.getElementById("ae-time").value = "";
+  document.getElementById("add-entry-modal").classList.remove("hidden");
+  document.getElementById("ae-name").focus();
+  selectedDate = date;
+};
+
+document.getElementById("ae-save").addEventListener("click", () => {
+  const name = document.getElementById("ae-name").value.trim();
+  if (!name) { return; }
+  const cal = parseFloat(document.getElementById("ae-cal").value) || 0;
+  const qty = parseFloat(document.getElementById("ae-qty").value) || 1;
+  let time = document.getElementById("ae-time").value;
+  const date = document.getElementById("ae-date").value || todayISO();
+
   const match = findMatchingFood(name);
-  let foodId, cal;
+  let foodId;
   if (match) {
     foodId = Object.keys(DB.foods).find(k => DB.foods[k] === match);
-    cal = DB.foods[foodId].calories;
   } else {
-    const newCal = prompt("That's a new food — calories per serving:");
-    if (newCal === null) return;
     foodId = nextId("f", DB.foods);
-    cal = parseFloat(newCal) || 0;
     DB.foods[foodId] = { name, calories: cal, macros: {} };
   }
-  const qty = prompt("Servings (leave blank for 1):", "1");
-  if (qty === null) return;
-  const time = prompt("Time (HH:MM, leave blank for none):", "");
+
   DB.entries.push({
     id: newEntryId(),
     date: date,
     time: time || "",
     foodId: foodId,
-    qty: parseFloat(qty) || 1
+    qty: qty
   });
   selectedDate = date;
+  closeCalModals();
   renderAll();
-};
+});
 
 /* ---------- History filters ---------- */
 function daysAgoISO(n) {
@@ -869,38 +1020,55 @@ window.editEntry = function(id) {
   const entry = DB.entries.find(e => e.id === id);
   if (!entry) return;
   const food = DB.foods[entry.foodId];
-  const name = food ? food.name : "";
-  const cal = food ? (food.calories || "") : "";
-  const qty = entry.qty !== undefined ? entry.qty : 1;
-  const time = entry.time || "";
+  const m = food ? (food.macros || {}) : {};
+  document.getElementById("ee-name").value = food ? food.name : "";
+  document.getElementById("ee-cal").value = food ? (food.calories || "") : "";
+  document.getElementById("ee-qty").value = entry.qty !== undefined ? entry.qty : 1;
+  document.getElementById("ee-time").value = entry.time || "";
+  document.getElementById("ee-protein").value = m.protein || "";
+  document.getElementById("ee-carbs").value = m.carbs || "";
+  document.getElementById("ee-fat").value = m.fat || "";
+  document.getElementById("edit-entry-modal")._entryId = id;
+  document.getElementById("edit-entry-modal").classList.remove("hidden");
+};
 
-  const newName = prompt("Food name:", name);
-  if (newName === null) return;
-  const newCal = prompt("Calories / serving:", cal);
-  if (newCal === null) return;
-  const newQty = prompt("Servings:", qty);
-  if (newQty === null) return;
-  const newTime = prompt("Time (HH:MM), leave blank for now:", time);
+document.getElementById("ee-save").addEventListener("click", () => {
+  const entry = DB.entries.find(e => e.id === document.getElementById("edit-entry-modal")._entryId);
+  if (!entry) { closeCalModals(); return; }
+  const newName = document.getElementById("ee-name").value.trim();
+  const newCal = parseFloat(document.getElementById("ee-cal").value);
+  const protein = parseFloat(document.getElementById("ee-protein").value) || 0;
+  const carbs = parseFloat(document.getElementById("ee-carbs").value) || 0;
+  const fat = parseFloat(document.getElementById("ee-fat").value) || 0;
 
   let foodId = entry.foodId;
   const f = DB.foods[foodId];
   if (f) {
     f.name = newName;
-    f.calories = parseFloat(newCal) || 0;
+    f.calories = newCal || 0;
+    f.macros = {};
+    if (protein) f.macros.protein = protein;
+    if (carbs) f.macros.carbs = carbs;
+    if (fat) f.macros.fat = fat;
   } else {
     const match = findMatchingFood(newName);
     if (match) {
       foodId = Object.keys(DB.foods).find(k => DB.foods[k] === match);
     } else {
+      const macros = {};
+      if (protein) macros.protein = protein;
+      if (carbs) macros.carbs = carbs;
+      if (fat) macros.fat = fat;
       foodId = nextId("f", DB.foods);
-      DB.foods[foodId] = { name: newName, calories: parseFloat(newCal) || 0, macros: {} };
+      DB.foods[foodId] = { name: newName, calories: newCal || 0, macros: macros };
     }
     entry.foodId = foodId;
   }
-  entry.qty = parseFloat(newQty) || 1;
-  entry.time = newTime;
+  entry.qty = parseFloat(document.getElementById("ee-qty").value) || 1;
+  entry.time = document.getElementById("ee-time").value || "";
+  closeCalModals();
   renderAll();
-};
+});
 
 /* ---------- Foods ---------- */
 function renderFoods() {
@@ -937,26 +1105,33 @@ function renderFoods() {
 window.editFood = function(id) {
   const f = DB.foods[id];
   if (!f) return;
-  const newName = prompt("Food name:", f.name);
-  if (newName === null) return;
-  const newCal = prompt("Calories / serving:", f.calories);
-  if (newCal === null) return;
-  const macroStr = prompt(
-    "Macros as comma-separated k:v pairs (e.g. protein:20, carbs:30, fat:5). Blank to clear:",
-    Object.entries(f.macros || {}).map(([k, v]) => `${k}:${v}`).join(", ")
-  );
-  if (macroStr === null) return;
-  f.name = newName;
-  f.calories = parseFloat(newCal) || 0;
-  f.macros = {};
-  if (macroStr.trim()) {
-    for (const part of macroStr.split(",")) {
-      const [k, ...v] = part.trim().split(":");
-      if (k && v.length) f.macros[k.trim()] = parseFloat(v.join(":").trim());
-    }
-  }
-  renderAll();
+  const m = f.macros || {};
+  document.getElementById("ef-name").value = f.name;
+  document.getElementById("ef-cal").value = f.calories;
+  document.getElementById("ef-protein").value = m.protein || "";
+  document.getElementById("ef-carbs").value = m.carbs || "";
+  document.getElementById("ef-fat").value = m.fat || "";
+  document.getElementById("edit-food-modal")._foodId = id;
+  document.getElementById("edit-food-modal").classList.remove("hidden");
 };
+
+document.getElementById("ef-save").addEventListener("click", () => {
+  const f = DB.foods[document.getElementById("edit-food-modal")._foodId];
+  if (!f) { closeCalModals(); return; }
+  const name = document.getElementById("ef-name").value.trim();
+  if (!name) return;
+  const protein = parseFloat(document.getElementById("ef-protein").value) || 0;
+  const carbs = parseFloat(document.getElementById("ef-carbs").value) || 0;
+  const fat = parseFloat(document.getElementById("ef-fat").value) || 0;
+  f.name = name;
+  f.calories = parseFloat(document.getElementById("ef-cal").value) || 0;
+  f.macros = {};
+  if (protein) f.macros.protein = protein;
+  if (carbs) f.macros.carbs = carbs;
+  if (fat) f.macros.fat = fat;
+  closeCalModals();
+  renderAll();
+});
 window.delFood = function(id) {
   const used = DB.entries.some(e => e.foodId === id);
   const msg = used
@@ -967,6 +1142,18 @@ window.delFood = function(id) {
   delete DB.foods[id];
   renderAll();
 };
+
+function closeCalModals() {
+  document.getElementById("edit-entry-modal").classList.add("hidden");
+  document.getElementById("edit-food-modal").classList.add("hidden");
+  document.getElementById("add-entry-modal").classList.add("hidden");
+}
+document.getElementById("ee-cancel").addEventListener("click", closeCalModals);
+document.getElementById("ef-cancel").addEventListener("click", closeCalModals);
+document.getElementById("ae-cancel").addEventListener("click", closeCalModals);
+document.querySelectorAll(".modal-backdrop").forEach(bd => {
+  bd.addEventListener("click", e => { if (e.target === bd) closeCalModals(); });
+});
 
 /* ================= Chart bucketing ================= */
 /* Each bucket => { label, entries[] }. Keyed for aggregation. */
